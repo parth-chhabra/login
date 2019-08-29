@@ -1,0 +1,33 @@
+{
+  "name": "white-panda-login",
+  "version": "0.0.1",
+  "description": "basic login system with otp facility",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "dev": "webpack --config webpack.config.dev.js --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "parth chhabra",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.8.1",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "mysql": "^2.17.1",
+    "sm-utils": "^2.17.21",
+    "vue": "^2.6.10",
+    "vue-material": "^1.0.0-beta-11",
+    "vue-router": "^3.1.2"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "css-loader": "^3.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^1.0.0",
+    "vue-loader": "^15.7.1",
+    "vue-template-compiler": "^2.6.10",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7"
+  }
+}
