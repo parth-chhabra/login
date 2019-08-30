@@ -7,11 +7,13 @@ const koaStatic = require('koa-static');
 
 const app = new Koa();
 const router = new Router()
+const port = process.env.PORT || 8080;
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'admin',
-    password: 'smartprix',
-    database: 'whitepanda',
+    host: process.env.HOST || 'localhost',
+    user: process.env.USER || 'admin',
+    port: process.env.PORT || 3306,
+    password: process.env.PASSWORD || 'password',
+    database: process.env.DB || 'whitepanda',
 });
 
 app.use(koaStatic(__dirname + '/dist'));
@@ -24,4 +26,4 @@ router.get('/(.*)', async (ctx) => {
 
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.listen(4000);
+app.listen(port);

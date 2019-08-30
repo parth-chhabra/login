@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  server:
+    build: .
+    ports:
+     - "3000:80"
+    depends_on:
+     - db
+    environment:
+     - DATABASE_HOST=db
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      DB: 'whitepanda'
+      USER: 'admin'
+      PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
