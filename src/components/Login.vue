@@ -36,7 +36,7 @@
 
             <md-card-actions>
                 <md-button @click="reset">Reset</md-button>
-                <md-button @click="submit">Submit</md-button>
+                <md-button @click="submit">Login</md-button>
             </md-card-actions>
         </md-card>
     </div>
