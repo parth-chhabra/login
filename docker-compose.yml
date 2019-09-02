@@ -4,19 +4,24 @@ services:
   server:
     build: .
     ports:
-     - "3000:80"
+     - "3000:3000"
     depends_on:
      - db
-    environment:
-     - DATABASE_HOST=db
+    command: node index.js
   db:
     image: mysql:5.7
-    restart: always
+    # restart: always
     environment:
-      DB: 'whitepanda'
-      USER: 'admin'
-      PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "whitepanda"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "password"
     ports:
-      - '3306:3306'
-    expose:
-      - '3306'
+      - "3306:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./logs:/var/log/mysql
+      - ./conf.d:/etc/mysql/conf.d
+volumes:
+  mysql:
+    driver: "local"
