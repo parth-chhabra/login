@@ -1,4 +1,3 @@
-const fs = require('fs');
 const Koa = require('koa');
 const Router = require('koa-router');
 const utils = require('sm-utils');
@@ -8,21 +7,21 @@ const SendOtp = require('sendotp');
 var knex = require('knex')({
     client: 'mysql',
     connection: {
-        // host: process.env.HOST || 'localhost',
-        // user: process.env.USER || 'admin',
-        // port: process.env.PORT || 3306,
-        // password: process.env.PASSWORD || 'smartprix',
-        // database: process.env.DB || 'whitepanda',
-        host: 'localhost',
-        user: 'admin',
-        password: 'smartprix',
-        database: 'whitepanda',
+        host: process.env.HOST || 'localhost',
+        user: process.env.MYSQL_USER || 'admin',
+        port: process.env.MYSQL_PORT || 3306,
+        password: process.env.MYSQL_PASSWORD || 'smartprix',
+        database: process.env.MYSQL_DATABASE || 'whitepanda',
+        // host: 'localhost',
+        // user: 'admin',
+        // password: 'smartprix',
+        // database: 'whitepanda',
     }
 });
 
 const app = new Koa();
 const router = new Router()
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 app.use(koaStatic(__dirname + '/dist'));
 app.use(koaBodyParser())
