@@ -1,5 +1,7 @@
-FROM node:10.15.0-alpine
+FROM node:10.16.3-alpine
 EXPOSE 3000
+
+WORKDIR .
 
 COPY package.json .
 
