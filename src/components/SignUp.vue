@@ -3,6 +3,12 @@
         <md-card md-with-hover>
             <md-card-header>
                 <div class="md-title">{{ verify ? 'Verification': 'Sign Up' }}</div>
+                <md-progress-spinner
+                    v-if="loading"
+                    :md-diameter="30"
+                    :md-stroke="3"
+                    md-mode="indeterminate">
+                </md-progress-spinner>
             </md-card-header>
 
             <md-card-content>
@@ -38,10 +44,22 @@
                 md-persistent>
                 <span>Account with email or phone already exists</span>
             </md-snackbar>
+            <md-snackbar
+                md-position="center"
+                :md-active.sync="retry"
+                md-persistent>
+                <span>Something messed up! Please Retry</span>
+            </md-snackbar>
+            <md-snackbar
+                md-position="center"
+                :md-active.sync="wrong"
+                md-persistent>
+                <span>Wrong OTP entered</span>
+            </md-snackbar>
 
             <md-card-actions>
-                <md-button @click="reset" v-if="!verify">Reset</md-button>
-                <md-button @click="signUp">{{ verify ? 'Verify' : 'Sign Up' }}</md-button>
+                <md-button class="md-accent" @click="reset" v-if="!verify" :disabled="loading">Reset</md-button>
+                <md-button class="md-primary" @click="signUp" :disabled="loading">{{ verify ? 'Verify' : 'Sign Up' }}</md-button>
             </md-card-actions>
         </md-card>
     </div>
@@ -63,6 +81,9 @@ export default {
             },
             verify: false,
             exists: false,
+            retry: false,
+            wrong: false,
+            loading: false,
         };
     },
     methods: {
@@ -74,17 +95,28 @@ export default {
             this.user.otp = '';
         },
         signUp() {
+            this.loading = true;
             axios.post('/signup', this.user).then((res) => {
-                if (res.data === 'verify') {
+                if (res.data.type === 'verify') {
                     this.verify = true;
                 }
-                if (res.data === 'exists') {
+                if (res.data.type === 'exists') {
                     this.exists = true;
                 }
+                if (res.data.type === 'retry') {
+                    this.retry = true;
+                }
+                if (res.data.type === 'wrong') {
+                    this.wrong = true;
+                }
+                if (res.data.type === 'redirect') {
+                    this.$router.push('/me');
+                }
+                this.loading = false;
             })
             .catch((err) => {
                 console.error(err);
-            })
+            });
         },
     }
 }
