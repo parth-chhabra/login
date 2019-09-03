@@ -110,7 +110,8 @@ export default {
                     this.wrong = true;
                 }
                 if (res.data.type === 'redirect') {
-                    this.$router.push('/me');
+                    this.$cookie.set('userToken', res.data.user);
+                    this.$router.push('/');
                 }
                 this.loading = false;
             })
