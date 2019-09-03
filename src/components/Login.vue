@@ -33,7 +33,7 @@
                         <md-button v-if="!getOtp" class="md-raised" @click="getOTP" :disabled="!user.phone">Get OTP</md-button>
                         <md-field v-if="getOtp">
                             <label>OTP</label>
-                            <md-input v-model="otp" type="password" required></md-input>
+                            <md-input v-model="user.otp" type="password" required></md-input>
                             <span class="md-error">Enter valid otp</span>
                         </md-field>
                     </md-tab>
@@ -78,8 +78,8 @@ export default {
                 email: '',
                 password: '',
                 phone: '',
+                otp: '',
             },
-            otp: '',
             getOtp: false,
             retry: false,
             invalid: false,
@@ -92,16 +92,16 @@ export default {
             this.user.email = '';
             this.user.password = '';
             this.user.phone = '';
-            this.otp = '';
+            this.user.otp = '';
             this.getOtp = false;
         },
         getOTP() {
             this.getOtp = true;
             this.loading = true;
             axios.post('/getotp', {phone: this.user.phone}).then((res) => {
+                this.loading = false;
                 if (res.data === 'sent') return;
                 this.getOtp = false;
-                this.loading = false;
                 if (res.data === 'retry') {
                     this.retry = true;
                 }
