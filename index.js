@@ -88,7 +88,7 @@ router.post('/signup', async (ctx) => {
                 });
                 ctx.body = {
                     type: 'redirect',
-                    user,
+                    user: user && user.id,
                 };
             }
             if (data.type === 'error') {
@@ -134,7 +134,7 @@ router.post('/login', async (ctx) => {
         ctx.status = 200;
         ctx.body = {
             type: user ? 'redirect' : 'invalid',
-            user,
+            user: user && user.id,
         };
         return;
     }
@@ -144,7 +144,7 @@ router.post('/login', async (ctx) => {
             const data = await verifyOtp(`91${phone}`, otp);
             ctx.body = {
                 type: data && data.type === 'success' ? 'redirect' : 'wrong',
-                user,
+                user: user && user.id,
             }
             return;
         }
