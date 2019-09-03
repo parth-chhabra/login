@@ -26,7 +26,7 @@ const port = process.env.PORT || 8080;
 app.use(koaStatic(__dirname + '/dist'));
 app.use(koaBodyParser())
 
-const msg91auth = 'xxxxxxxxxxxxxxxxxxxx';
+const msg91auth = 'xxxxxxxxxxxxxxxxx';
 const otpService = new SendOtp(msg91auth);
 
 router.get('/(.*)', async (ctx) => {
@@ -62,11 +62,11 @@ function sendOtp(phone) {
 }
 
 router.post('/signup', async (ctx) => {
-    const name = ctx.request.body.name;
-    const email = ctx.request.body.email;
+    const name = ctx.request.body.name.trim();
+    const email = ctx.request.body.email.trim();
     const phone = ctx.request.body.phone.trim();
     const password = ctx.request.body.password;
-    const otp = ctx.request.body.otp;
+    const otp = ctx.request.body.otp.trim();
     const exists = await knex.select().table('user').where('email', email).orWhere('phone', phone).first();
     ctx.status = 200;
     if (exists) {
@@ -125,10 +125,10 @@ router.post('/signup', async (ctx) => {
 });
 
 router.post('/login', async (ctx) => {
-    const email = ctx.request.body.email;
-    const password = ctx.request.body.email;
-    const phone = ctx.request.body.phone;
-    const otp = ctx.request.body.login;
+    const email = ctx.request.body.email.trim();
+    const password = ctx.request.body.password.trim();
+    const phone = ctx.request.body.phone.trim();
+    const otp = ctx.request.body.otp.trim();
     if (email && password) {
         const user = await knex.select().from('user').where('email', email).andWhere('password', password).first();
         ctx.status = 200;
@@ -141,7 +141,7 @@ router.post('/login', async (ctx) => {
     else if (phone && otp) {
         const user = await knex.select().from('user').where('phone', phone).first();
         if (user) {
-            const data = await verifyOtp(phone, otp);
+            const data = await verifyOtp(`91${phone}`, otp);
             ctx.body = {
                 type: data && data.type === 'success' ? 'redirect' : 'wrong',
                 user,
@@ -160,7 +160,7 @@ router.post('/getotp', async (ctx) => {
     if (phone) {
         const user = await knex.select().from('user').where('phone', phone).first();
         if (user) {
-            const data = await sendOtp(phone);
+            const data = await sendOtp(`91${phone}`);
             if (data.type === 'success') {
                 ctx.body = 'sent';
                 return;
