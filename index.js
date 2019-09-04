@@ -4,7 +4,7 @@ const utils = require('sm-utils');
 const koaStatic = require('koa-static');
 const koaBodyParser = require('koa-bodyparser');
 const SendOtp = require('sendotp');
-var knex = require('knex')({
+const knex = require('knex')({
     client: 'mysql',
     connection: {
         // host: process.env.HOST || 'localhost',
@@ -26,7 +26,7 @@ const port = process.env.PORT || 8080;
 app.use(koaStatic(__dirname + '/dist'));
 app.use(koaBodyParser())
 
-const msg91auth = 'xxxxxxxxxxxxxxxxxxxxx';
+const msg91auth = process.env.MSG91_KEY || 'xxxxxxxxxxxxxxxxxxxxx';
 const otpService = new SendOtp(msg91auth);
 
 router.get('/(.*)', async (ctx) => {
