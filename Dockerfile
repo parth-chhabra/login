@@ -1,5 +1,4 @@
 FROM node:10.16.3-alpine
-EXPOSE 3000
 
 WORKDIR .
 
@@ -9,4 +8,4 @@ RUN npm install
 
 COPY . .
 
-RUN npm run dev
+RUN npm run build
