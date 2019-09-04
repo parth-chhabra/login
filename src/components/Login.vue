@@ -87,6 +87,12 @@ export default {
             loading: false,
         };
     },
+    created() {
+        const userToken = this.$cookies.get('userToken');
+        if (userToken) {
+            this.$router.push('/');
+        }
+    },
     methods: {
         reset() {
             this.user.email = '';
@@ -117,7 +123,8 @@ export default {
             this.loading = true;
             axios.post('/login', this.user).then((res) => {
                 if (res.data.type === 'redirect') {
-                    this.$router.push('/me');
+                    this.$cookies.set('userToken', res.data.user.id);
+                    this.$router.push('/');
                 }
                 if (res.data.type === 'invalid') {
                     this.invalid = true;
