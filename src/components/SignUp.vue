@@ -86,6 +86,12 @@ export default {
             loading: false,
         };
     },
+    created() {
+        const userToken = this.$cookies.get('userToken');
+        if (userToken) {
+            this.$router.push('/');
+        }
+    },
     methods: {
         reset() {
             this.user.name = '';
@@ -110,7 +116,7 @@ export default {
                     this.wrong = true;
                 }
                 if (res.data.type === 'redirect') {
-                    this.$cookie.set('userToken', res.data.user);
+                    this.$cookies.set('userToken', res.data.user.id);
                     this.$router.push('/');
                 }
                 this.loading = false;
