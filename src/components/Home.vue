@@ -1,8 +1,19 @@
 <template>
     <div>
-        <div v-if="user">
-            <span>WELCOME {{ user.name }}</span>
-            <md-button class="md-accent" @click="logout">Logout</md-button>
+        <div v-if="user" class="user-box">
+            <md-card>
+                <md-card-header>
+                    <div class="md-title">WELCOME</div>
+                </md-card-header>
+
+                <md-card-content>
+                    Hi {{ user.name }}
+                </md-card-content>
+
+                <md-card-actions>
+                    <md-button class="md-raised md-accent" @click="logout">Logout</md-button>
+                </md-card-actions>
+            </md-card>
         </div>
         <div v-else>
             <router-link to="/login">
@@ -20,24 +31,34 @@ import axios from 'axios';
 
 export default {
   name: 'Home',
+  data() {
+      return {
+          user: null,
+      };
+  },
   created() {
-      const userToken = this.$cookie.get('userToken');
-      if (userToken) {
+      const userToken = this.$cookies.get('userToken');
+      if (!this.user && userToken) {
           axios.post('/login', null, {headers: {userToken}}).then((res) => {
-              if (res.data.type === 'success') {
-                  this.$router.go();
+              if (res.data.type === 'redirect') {
                   this.user = res.data.user;
               }
           });
       }
   },
-  data() {
-      return {
-          user: null,
-      }
-  },
   methods: {
-      logout() {},
+      logout() {
+          this.$cookies.remove('userToken');
+          this.$router.go();
+      },
   },
 }
 </script>
+
+<style scoped>
+    .user-box {
+        width: 900px;
+        margin: auto;
+        padding-top: 50px;
+    }
+</style>
