@@ -26,7 +26,7 @@ const port = process.env.PORT || 8080;
 app.use(koaStatic(__dirname + '/dist'));
 app.use(koaBodyParser())
 
-const msg91auth = 'xxxxxxxxxxxxxxxxx';
+const msg91auth = 'xxxxxxxxxxxxxxxxxxxxx';
 const otpService = new SendOtp(msg91auth);
 
 router.get('/(.*)', async (ctx) => {
@@ -61,12 +61,36 @@ function sendOtp(phone) {
     });
 }
 
-router.post('/signup', async (ctx) => {
+async function isLoggedIn(ctx, next) {
+    const userToken = ctx.request.headers.usertoken;
+    if (!userToken) {
+        await next();
+        return;
+    }
+    const user = await knex.select().table('user').where('id', userToken).first();
+    if (!user) {
+        await next();
+        return;
+    }
+    ctx.status = 200;
+    ctx.body = {
+        type: 'redirect',
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+        },
+    };
+    return;
+}
+
+router.post('/signup', isLoggedIn, async (ctx) => {
     const name = ctx.request.body.name.trim();
     const email = ctx.request.body.email.trim();
     const phone = ctx.request.body.phone.trim();
     const password = ctx.request.body.password;
-    const otp = ctx.request.body.otp.trim();
+    const otp = ctx.request.body.otp && ctx.request.body.otp.trim();
     const exists = await knex.select().table('user').where('email', email).orWhere('phone', phone).first();
     ctx.status = 200;
     if (exists) {
@@ -80,15 +104,22 @@ router.post('/signup', async (ctx) => {
         try {
             const data = await verifyOtp(`91${phone}`, otp);
             if (data.type === 'success' && !exists) {
-                const user = await knex('user').insert({
+                const user = {
+                    id: Math.random().toString(32).slice(2),
                     name,
                     email,
                     phone,
-                    password,
-                });
+                    password: Buffer.from(password).toString('base64').slice(0, 20),
+                };
+                await knex('user').insert(user);
                 ctx.body = {
                     type: 'redirect',
-                    user: user && user.id,
+                    user: {
+                        id: user.id,
+                        name: user.name,
+                        phone: user.phone,
+                        email: user.email,
+                    },
                 };
             }
             if (data.type === 'error') {
@@ -99,7 +130,10 @@ router.post('/signup', async (ctx) => {
             }
         }
         catch (err) {
-            ctx.status = 404;
+            ctx.body = {
+                type: 'retry',
+                user: null,
+            };
             console.log(err);
         }
         return;
@@ -124,17 +158,18 @@ router.post('/signup', async (ctx) => {
     return
 });
 
-router.post('/login', async (ctx) => {
-    const email = ctx.request.body.email.trim();
-    const password = ctx.request.body.password.trim();
-    const phone = ctx.request.body.phone.trim();
-    const otp = ctx.request.body.otp.trim();
+router.post('/login', isLoggedIn, async (ctx) => {
+    const email = ctx.request.body.email && ctx.request.body.email.trim();
+    const password = ctx.request.body.password && ctx.request.body.password.trim();
+    const phone = ctx.request.body.phone && ctx.request.body.phone.trim();
+    const otp = ctx.request.body.otp && ctx.request.body.otp.trim();
     if (email && password) {
-        const user = await knex.select().from('user').where('email', email).andWhere('password', password).first();
+        const pass = Buffer.from(password).toString('base64').slice(0, 20);
+        const user = await knex.select().from('user').where('email', email).andWhere('password', pass).first();
         ctx.status = 200;
         ctx.body = {
             type: user ? 'redirect' : 'invalid',
-            user: user && user.id,
+            user: user ? {id: user.id, name: user.name, email: user.email, phone: user.phone} : null,
         };
         return;
     }
@@ -144,7 +179,7 @@ router.post('/login', async (ctx) => {
             const data = await verifyOtp(`91${phone}`, otp);
             ctx.body = {
                 type: data && data.type === 'success' ? 'redirect' : 'wrong',
-                user: user && user.id,
+                user: data && data.type === 'success' ? {id: user.id, name: user.name, email: user.email, phone: user.phone} : null,
             }
             return;
         }
