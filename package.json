@@ -4,7 +4,7 @@
   "description": "basic login system with otp facility",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "build": "webpack --config webpack.config.dev.js",
     "dev": "webpack --config webpack.config.dev.js --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
