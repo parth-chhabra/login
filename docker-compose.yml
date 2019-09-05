@@ -14,7 +14,7 @@ services:
       DB_PASSWORD: "password"
     depends_on:
      - db
-    command: npm run migrate && node index.js
+    command: node index.js
   db:
     image: mysql:5.7
     environment:
