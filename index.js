@@ -7,17 +7,28 @@ const SendOtp = require('sendotp');
 const knex = require('knex')({
     client: 'mysql',
     connection: {
-        // host: process.env.HOST || 'localhost',
-        // user: process.env.MYSQL_USER || 'admin',
-        // port: process.env.MYSQL_PORT || 3306,
-        // password: process.env.MYSQL_PASSWORD || 'smartprix',
-        // database: process.env.MYSQL_DATABASE || 'whitepanda',
-        host: 'localhost',
-        user: 'admin',
-        password: 'smartprix',
-        database: 'whitepanda',
+        host: process.env.DB_HOST || 'localhost',
+        user: process.env.DB_USER || 'admin',
+        port: process.env.DB_PORT || 3306,
+        password: process.env.DB_PASSWORD || 'password',
+        database: process.env.DB || 'whitepanda',
     }
 });
+
+async function createTable() {
+    await knex.schema.raw(`
+        CREATE TABLE IF NOT EXISTS user (
+            id varchar(16) NOT NULL,
+            name varchar(255) NOT NULL,
+            email varchar(80) NOT NULL,
+            phone varchar(10) NOT NULL,
+            password varchar(20) NOT NULL,
+            PRIMARY KEY (id),
+            UNIQUE KEY phone (phone),
+            UNIQUE KEY email (email)
+        );`
+    );
+}
 
 const app = new Koa();
 const router = new Router()
@@ -210,4 +221,7 @@ router.post('/getotp', async (ctx) => {
 
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.listen(port);
+app.listen(port, async () => {
+    await createTable();
+    console.log('Listening on: ', port);
+});
