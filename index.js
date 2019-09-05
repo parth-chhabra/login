@@ -213,6 +213,10 @@ router.post('/login', isLoggedIn, async (ctx) => {
             user: null,
         };
     }
+    ctx.body = {
+        type: 'invalid',
+        user: null,
+    };
 });
 
 router.post('/getotp', async (ctx) => {
