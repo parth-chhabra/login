@@ -3,6 +3,9 @@
         <md-card md-with-hover>
             <md-card-header>
                 <div class="md-title">{{ verify ? 'Verification': 'Sign Up' }}</div>
+                <span>
+                    Already a user? <router-link to="/login">Login</router-link>
+                </span>
                 <md-progress-spinner
                     v-if="loading"
                     :md-diameter="30"

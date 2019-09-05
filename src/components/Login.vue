@@ -3,6 +3,9 @@
         <md-card md-with-hover>
             <md-card-header>
                 <div class="md-title">Login</div>
+                <span>
+                    Not registered? <router-link to="/signup">Sign Up</router-link>
+                </span>
                 <md-progress-spinner
                     v-if="loading"
                     :md-diameter="30"
