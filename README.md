@@ -17,3 +17,5 @@ Finally run
 ```docker-compose up```
 
 and see [this](http://localhost:3000)
+
+Deployed [here](https://pandalogin.herokuapp.com/)
