@@ -4,15 +4,30 @@ const utils = require('sm-utils');
 const koaStatic = require('koa-static');
 const koaBodyParser = require('koa-bodyparser');
 const SendOtp = require('sendotp');
-const knex = require('knex')({
-    client: 'mysql',
-    connection: {
+let connection;
+try {
+    connection = require('./private/connection');
+}
+catch {
+    connection = {
         host: process.env.DB_HOST || 'localhost',
         user: process.env.DB_USER || 'admin',
         port: process.env.DB_PORT || 3306,
         password: process.env.DB_PASSWORD || 'password',
         database: process.env.DB || 'whitepanda',
-    }
+    };
+}
+let msg91auth ;
+try {
+    msg91auth = require('./private/msg91auth');
+}
+catch {
+    msg91auth = process.env.MSG91_KEY || 'xxxxxxxxx';
+}
+
+const knex = require('knex')({
+    client: 'mysql',
+    connection,
 });
 
 async function createTable() {
@@ -37,7 +52,6 @@ const port = process.env.PORT || 8080;
 app.use(koaStatic(__dirname + '/dist'));
 app.use(koaBodyParser())
 
-const msg91auth = process.env.MSG91_KEY || 'xxxxxxxxxxxxxxxxxxxxx';
 const otpService = new SendOtp(msg91auth);
 
 router.get('/(.*)', async (ctx) => {
