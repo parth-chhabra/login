@@ -2,7 +2,7 @@
 
 Register and Login system
 
-Login using email + password or mobile + OTP
+Login using `email + password` or `mobile + OTP`
 
 [NodeJS](https://nodejs.org), [KoaJS](https://koajs.com/), [VueJS](https://vuejs.org/), MySQL
 
